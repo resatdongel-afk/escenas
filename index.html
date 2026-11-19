@@ -1,0 +1,1082 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><link rel="icon" href="icons/favicon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Escenas"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="theme-color" content="#74ACDF"><style>body{margin:0}</style></head><body><title>Escenas de Barrio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column like a phone; intercom panel header, scene chips, phrase drawer, chat, input bar */
+:root{
+  --bg:#f3f5f7; --panel:#ffffff; --ink:#14212e; --muted:#5b6b7a; --line:#d9e0e6;
+  --accent:#2f7fc1; --accent-ink:#ffffff; --sol:#e3a32b; --me:#e4eff9; --ok:#1f8a4c; --bad:#c2412d; --badbg:#fbeae6; --okbg:#e6f4ec;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161d; --panel:#17212b; --ink:#e6edf3; --muted:#93a4b4; --line:#2a3846;
+  --accent:#6cb4ee; --accent-ink:#0b1720; --sol:#f0b94a; --me:#1d3247; --ok:#5fd08f; --bad:#ff8a73; --badbg:#3a211c; --okbg:#173326; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161d; --panel:#17212b; --ink:#e6edf3; --muted:#93a4b4; --line:#2a3846;
+  --accent:#6cb4ee; --accent-ink:#0b1720; --sol:#f0b94a; --me:#1d3247; --ok:#5fd08f; --bad:#ff8a73; --badbg:#3a211c; --okbg:#173326; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 120px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;flex:none;display:block}
+.who{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.who .chip{padding:6px 12px}
+.who .add{border-style:dashed;color:var(--muted)}
+.newp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.newp input{font:500 .95rem var(--body);padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);min-width:0;flex:1 1 140px}
+.emo{display:flex;gap:4px}
+.emo button{font-size:1.2rem;background:none;border:2px solid transparent;border-radius:10px;padding:2px 4px;cursor:pointer}
+.emo button[aria-pressed="true"]{border-color:var(--accent)}
+.sync{font-size:.75rem;color:var(--muted)}
+.bell{width:44px;height:44px;border-radius:12px;background:var(--ink);display:grid;place-items:center;flex:none}
+.bell span{width:14px;height:14px;border-radius:50%;background:var(--sol);box-shadow:0 0 0 4px color-mix(in srgb,var(--sol) 30%,transparent)}
+h1{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.1;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;font:500 .9rem var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,button:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+summary{cursor:pointer;padding:12px 14px;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"＋";color:var(--muted)}
+details[open] summary::after{content:"－"}
+.phrases{display:grid;gap:2px;padding:0 6px 8px}
+.ph{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:8px;border-radius:10px}
+.ph:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.ph .es{font-weight:600}
+.ph .tr{color:var(--muted);font-size:.85rem}
+.ph .who{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.spk{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--accent);cursor:pointer;font-size:.9rem;flex:none}
+.ph.now{background:color-mix(in srgb,var(--sol) 22%,transparent)}
+.ph.now .spk{background:var(--sol);color:var(--ink);border-color:var(--sol)}
+.shad{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:4px 14px 10px}
+.shad .play{border:none;border-radius:999px;padding:9px 16px;background:var(--ink);color:var(--bg);font:600 .9rem var(--body);cursor:pointer}
+.shad .status{font-size:.85rem;color:var(--muted);min-width:0}
+.shad .status.you{color:var(--ok);font-weight:600}
+.shad label{font-size:.8rem;color:var(--muted);display:flex;gap:6px;align-items:center}
+.note{background:color-mix(in srgb,var(--sol) 14%,var(--panel));border-radius:12px;padding:10px 12px;font-size:.88rem}
+.chat{display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;display:flex;flex-direction:column;gap:6px}
+.them{align-self:flex-start}
+.me{align-self:flex-end;align-items:flex-end}
+.bubble{padding:10px 14px;border-radius:16px;background:var(--panel);border:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+.me .bubble{background:var(--me);border-color:transparent}
+.them .who{font-size:.72rem;color:var(--muted);font-weight:600}
+.line{display:flex;gap:8px;align-items:flex-start}
+.trl{color:var(--muted);font-size:.85rem;margin-top:4px}
+.trl[hidden]{display:none}
+.fix{border-radius:12px;padding:8px 12px;font-size:.88rem;max-width:100%}
+.fix.ok{background:var(--okbg);color:var(--ok)}
+.fix.bad{background:var(--badbg)}
+.fix.bad b{color:var(--bad)}
+.fix .good{color:var(--ink);font-weight:600}
+.small{background:none;border:none;color:var(--accent);font:500 .8rem var(--body);cursor:pointer;padding:0}
+.thinking{color:var(--muted);font-style:italic}
+.end{background:var(--panel);border:2px solid var(--ok);border-radius:14px;padding:14px;display:grid;gap:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar .in{max-width:640px;margin:0 auto;display:grid;gap:8px}
+.inrow{display:flex;gap:8px;align-items:flex-end}
+textarea{flex:1;min-width:0;resize:none;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:10px 12px;font:16px/1.4 var(--body);min-height:44px;max-height:120px}
+.send{height:44px;padding:0 18px;border:none;border-radius:14px;background:var(--accent);color:var(--accent-ink);font:600 1rem var(--body);cursor:pointer}
+.send:disabled{opacity:.5;cursor:default}
+.mic{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:1.1rem;flex:none}
+.mic.on{background:var(--bad);color:#fff;border-color:var(--bad)}
+.tools{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:.8rem;color:var(--muted)}
+.tools label{display:flex;gap:6px;align-items:center}
+.list{display:grid;gap:8px;padding:0 14px 14px}
+.list .it{border-top:1px solid var(--line);padding-top:8px;font-size:.9rem}
+.list .it s{color:var(--bad)}
+@media (prefers-reduced-motion:no-preference){.msg{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="2" y="2" width="60" height="60" rx="16" fill="#74ACDF"/>
+      <rect x="2" y="23" width="60" height="18" fill="#fff"/>
+      <g transform="translate(32 32)" fill="#F6B40E">
+        <circle r="6.5"/>
+        <g stroke="#F6B40E" stroke-width="2.4" stroke-linecap="round">
+          <line y1="-9" y2="-13"/><line y1="9" y2="13"/><line x1="-9" x2="-13"/><line x1="9" x2="13"/>
+          <line x1="-6.4" y1="-6.4" x2="-9.2" y2="-9.2"/><line x1="6.4" y1="6.4" x2="9.2" y2="9.2"/>
+          <line x1="6.4" y1="-6.4" x2="9.2" y2="-9.2"/><line x1="-6.4" y1="6.4" x2="-9.2" y2="9.2"/>
+        </g>
+      </g>
+      <path d="M44 46 h14 v10 l-5 -4 h-9 z" fill="#14212e"/>
+      <text x="51" y="53" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="6.5" fill="#fff">ché</text>
+    </svg>
+    <div>
+      <h1>Escenas de Barrio</h1>
+      <p class="sub">Buenos Aires İspanyolcası · gerçek hayat provası</p>
+    </div>
+  </header>
+
+  <div>
+    <div class="label">Kim çalışıyor? <span class="sync" id="sync"></span></div>
+    <div class="who" id="who" role="group" aria-label="Kişi seç"></div>
+    <div class="newp" id="newp" hidden>
+      <input id="pname" maxlength="20" placeholder="İsim (ör. Ayşe)" autocomplete="off">
+      <div class="emo" id="pemo"></div>
+      <button class="chip" id="psave">Ekle</button>
+      <button class="small" id="pcancel">Vazgeç</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">Sahne</div>
+    <div class="row" id="scenes" role="group" aria-label="Sahne seç"></div>
+  </div>
+  <div>
+    <div class="label">Seviye</div>
+    <div class="row" id="levels" role="group" aria-label="Seviye seç">
+      <button class="chip" data-level="A1" aria-pressed="true">Yeni başlıyorum</button>
+      <button class="chip" data-level="A2" aria-pressed="false">Biraz biliyorum</button>
+      <button class="chip" data-level="B1" aria-pressed="false">Konuşabiliyorum</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">Cande'nin hızı</div>
+    <div class="row" id="speed" role="group" aria-label="Ses hızı">
+      <button class="chip" data-speed="slow">🐢 Yavaş, anlaşılır</button>
+      <button class="chip" data-speed="normal">🐇 Normal (gerçek hayat)</button>
+    </div>
+  </div>
+
+  <details id="walk">
+    <summary>🎧 Yürüyüş modu · ekrana bakmadan dinle</summary>
+    <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:10px">
+      <p class="sub" style="margin:0">Her kalıp için sıra: Cande İspanyolcasını söyler → Türkçe anlamı gelir → Cande bir daha söyler → <b>sessizlikte sen tekrar et</b> → son bir kez duyarsın. Dersler yavaş sesle hazırlandı. Kulaklığı tak, yürü.</p>
+      <div class="row" id="wlist" role="group" aria-label="Ders seç"></div>
+      <div id="wnow" class="sub" style="font-weight:600;color:var(--ink)"></div>
+      <audio id="wplayer" controls preload="none" style="width:100%"></audio>
+      <label class="sub" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wnext" checked> Bitince sıradaki derse geç</label>
+      <button class="small" id="wdl" hidden>⬇️ Bu dersi telefona indir (müzik uygulamasında ekran kapalıyken dinlemek için)</button>
+      <button class="small" id="offl">📥 Tüm sesleri telefona kaydet (internetsiz çalışsın)</button> <span class="sync" id="offs"></span>
+    </div>
+  </details>
+
+  <details id="basics">
+    <summary>📚 Temel kelimeler ve kalıplar</summary>
+    <div class="row" id="bgroups" role="group" aria-label="Kelime grubu seç" style="padding:0 14px 8px"></div>
+    <div class="shad" data-list="bwords"></div>
+    <div class="phrases" id="bwords"></div>
+  </details>
+
+  <details id="prep" open>
+    <summary>Önce bu kalıplara bak</summary>
+    <div class="shad" data-list="phrases"></div>
+    <div class="phrases" id="phrases"></div>
+  </details>
+
+  <div class="note" id="scenenote"></div>
+
+  <div class="chat" id="chat" aria-live="polite"></div>
+
+  <details id="mistakes">
+    <summary>Hatalarım <span id="mcount" class="sub"></span></summary>
+    <div class="list" id="mlist"></div>
+  </details>
+</div>
+
+<div class="bar">
+  <div class="in">
+    <div class="inrow">
+      <button class="mic" id="mic" hidden aria-label="Sesle yaz">🎤</button>
+      <textarea id="box" rows="1" placeholder="İspanyolca yaz… bilmediğin kelimeyi Türkçe yaz"></textarea>
+      <button class="send" id="send">Gönder</button>
+    </div>
+    <div class="tools">
+      <button class="small" id="hint">💡 Ne diyebilirim?</button>
+      <label><input type="checkbox" id="auto" checked> Cevapları sesli oku</label>
+      <button class="small" id="restart">↺ Sahneyi baştan başlat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCENES = {
+  kargo: {
+    name: "📦 Kargocu", role: "Mercado Libre repartidor",
+    setup: "Bir apartmandasın. Mercado Libre kargocusu aşağıdan interkoma (portero eléctrico) basıyor. Kod ya da DNI isteyebilir. Gerçek DNI'ni yazma, uydurma bir numara kullan (ör. 95.123.456).",
+    brief: "The learner lives in an apartment building in Buenos Aires. You are a Mercado Libre delivery driver (repartidor) ringing the intercom (portero eléctrico) from the street. You have a package for the learner's apartment. Ask them to come down (or say you'll leave it with the encargado if they can't). When they arrive downstairs, ask for the security code (el código que te llegó en la app de Mercado Libre) and sometimes the DNI number. Then hand over the package and say goodbye. Small realistic twists are good (e.g. the code doesn't match the first time, or you're double-parked and in a hurry).",
+    open: {line:"¡Hola! Mercado Libre. Tengo un paquete para el 4° B. ¿Bajás?", tr:"Merhaba! Mercado Libre. 4/B için bir paketim var. Aşağı iner misin?", hint:"¡Hola! Sí, ya bajo. Un minuto.", hint_tr:"Merhaba! Evet, hemen iniyorum. Bir dakika."},
+    phrases: [
+      ["kargocu","¿Bajás?","Aşağı iner misin?"],
+      ["kargocu","¿Me pasás el código?","Kodu söyler misin?"],
+      ["kargocu","¿Me decís tu DNI?","Kimlik numaranı söyler misin?"],
+      ["kargocu","Firmame acá.","Şuraya imza at."],
+      ["sen","¡Ya bajo!","Hemen iniyorum!"],
+      ["sen","Ahí voy, un minuto.","Geliyorum, bir dakika."],
+      ["sen","El código es cuatro, siete, dos, nueve.","Kod: 4-7-2-9."],
+      ["sen","Mi DNI es noventa y cinco millones…","DNI numaram doksan beş milyon…"],
+      ["sen","¡Gracias! Que tengas buen día.","Teşekkürler, iyi günler!"]
+    ]
+  },
+  verduleria: {
+    name: "🍅 Manav", role: "verdulero de barrio",
+    setup: "Mahalledeki manavdasın (verdulería). Kilo ile sebze meyve alacaksın, fiyat soracaksın, ödeme yapacaksın.",
+    brief: "You are a friendly neighbourhood verdulero in Buenos Aires. The learner buys fruit and vegetables by the kilo. Quote realistic current prices in Argentine pesos, ask '¿algo más?', ask how they pay (efectivo, transferencia, Mercado Pago QR).",
+    open: {line:"¡Buen día! ¿Qué te doy?", tr:"Günaydın! Ne vereyim?", hint:"Buen día. Dame un kilo de tomates, por favor.", hint_tr:"Günaydın. Bir kilo domates ver lütfen."},
+    phrases: [
+      ["manav","¿Qué te doy?","Ne vereyim?"],
+      ["manav","¿Algo más?","Başka bir şey?"],
+      ["manav","¿Efectivo o transferencia?","Nakit mi, havale mi?"],
+      ["sen","Dame un kilo de…","Bana bir kilo … ver."],
+      ["sen","Medio kilo de papas.","Yarım kilo patates."],
+      ["sen","¿Cuánto sale?","Ne kadar?"],
+      ["sen","Nada más, gracias.","Başka bir şey yok, teşekkürler."],
+      ["sen","¿Aceptás Mercado Pago?","Mercado Pago ile ödeyebilir miyim?"]
+    ]
+  },
+  bazar: {
+    name: "🛍️ Bazar / dükkan", role: "vendedor de un bazar de barrio",
+    setup: "Ivır zıvır satan bir mahalle dükkanındasın (bazar): mutfak eşyası, lamba, şarj aleti, saklama kabı… Bir şey arıyorsun. Yenisi, başka rengi, büyüğü, küçüğü, ucuzu ya da kalitelisi var mı diye soracaksın.",
+    brief: "You run a small bazar (household goods / gadgets shop) in a Buenos Aires neighbourhood: kitchenware, lamps, chargers, containers, tools. The learner is looking for something. They will ask whether you have a new/unopened one, other colours, bigger/smaller sizes, cheaper or better-quality versions. Answer realistically with small twists: the colour they want is out of stock, it's the last one (the display unit), the better one costs more but lasts longer, 10% discount for cash, card costs more, warranty or exchange rules (cambio con ticket), offer to wrap it. At checkout ask how they pay (efectivo, débito o crédito, Mercado Pago) and offer typical Argentine card deals: cuotas sin interés (3 or 6 cuotas with certain cards), 'la segunda unidad al 50%', '2x1', or a promo that is only for cash or only with one bank's card. Quote realistic Argentine peso prices.",
+    open: {line:"¡Hola! ¿Buscás algo en particular?", tr:"Merhaba! Özel bir şey mi arıyorsun?", hint:"Hola, sí. Busco una lámpara para la mesa de luz.", hint_tr:"Merhaba, evet. Komodin için bir lamba arıyorum."},
+    phrases: [
+      ["satıcı","¿Buscás algo en particular?","Özel bir şey mi arıyorsun?"],
+      ["sen","Estoy mirando, gracias.","Sadece bakıyorum, teşekkürler."],
+      ["sen","¿Tenés uno nuevo, en caja?","Yenisi, kutusunda olanı var mı?"],
+      ["sen","¿Lo tenés en otro color?","Başka rengi var mı?"],
+      ["sen","¿Tenés uno más grande?","Daha büyüğü var mı?"],
+      ["sen","¿Tenés uno más chico?","Daha küçüğü var mı?"],
+      ["sen","¿Tenés algo más barato?","Daha ucuzu var mı?"],
+      ["sen","¿Tenés uno de mejor calidad?","Daha kalitelisi var mı?"],
+      ["sen","¿Cuál es la diferencia?","Farkı ne?"],
+      ["sen","¿Cuál me recomendás?","Hangisini önerirsin?"],
+      ["sen","¿Me lo mostrás?","Bana gösterir misin?"],
+      ["sen","¿Tiene garantía?","Garantisi var mı?"],
+      ["sen","Si no anda, ¿lo puedo cambiar?","Çalışmazsa değiştirebilir miyim?"],
+      ["sen","¿Me hacés un descuento en efectivo?","Nakit ödersem indirim yapar mısın?"],
+      ["sen","Me lo llevo.","Bunu alıyorum."],
+      ["satıcı","Es el último que me queda.","Elimde kalan son tane bu."],
+      ["satıcı","En ese color no me queda.","O renkten kalmadı."],
+      ["satıcı","Este sale más, pero dura más.","Bu daha pahalı ama daha uzun dayanır."],
+      ["satıcı","En efectivo te hago un diez por ciento.","Nakitte sana %10 indirim yaparım."],
+      ["satıcı","Para cambios, guardá el ticket.","Değişim için fişi sakla."],
+      ["satıcı","¿Es para regalo?","Hediye mi? (hediye paketi yapayım mı?)"],
+      ["satıcı","¿Cómo lo vas a pagar?","Nasıl ödeyeceksin?"],
+      ["satıcı","¿Débito o crédito?","Banka kartı mı, kredi kartı mı?"],
+      ["satıcı","¿Lo querés en cuotas?","Taksitle ister misin?"],
+      ["satıcı","Tenés tres cuotas sin interés.","3 taksit faizsiz yapabiliyoruz."],
+      ["satıcı","Con esta tarjeta tenés seis cuotas.","Bu kartla 6 taksit var."],
+      ["sen","¿En cuántas cuotas lo puedo pagar?","Kaç taksitle ödeyebilirim?"],
+      ["sen","¿Son sin interés?","Faizsiz mi?"],
+      ["sen","¿De cuánto es cada cuota?","Her taksit ne kadar?"],
+      ["sen","En tres cuotas, por favor.","3 taksit lütfen."],
+      ["sen","En un pago.","Tek çekim."],
+      ["satıcı","Llevando dos, la segunda unidad al cincuenta por ciento.","İki alırsan ikincisi %50 indirimli."],
+      ["satıcı","Hay dos por uno.","Bir alana bir bedava (2x1)."],
+      ["sen","¿El descuento es en la segunda unidad?","İndirim ikinci üründe mi?"],
+      ["sen","¿La promo es con cualquier tarjeta?","Kampanya her kartla geçerli mi?"],
+      ["satıcı","Esa promo es solo en efectivo.","O kampanya sadece nakitte geçerli."]
+    ]
+  },
+  cafe: {
+    name: "☕ Kafe (Starbucks)", role: "barista at a Starbucks in Buenos Aires",
+    setup: "Starbucks'tasın. Sıcak bir americano sipariş edeceksin, boyunu seçeceksin, adını söyleyeceksin. Sonra tuvaletin yerini, tuvaletin şifresini ve wifi şifresini soracaksın.",
+    brief: "You are a friendly barista at a Starbucks in Buenos Aires. The learner orders a hot americano (americano caliente). Ask the size (Tall, Grande, Venti), whether it's 'para tomar acá o para llevar', whether they want milk or anything else (algo para comer?), their name for the cup, and how they pay. When they ask, explain where the bathroom is (al fondo, a la derecha / arriba) and that the bathroom door code (el código del baño) is printed on the ticket, and tell them the wifi network and password. Then call their name when the drink is ready.",
+    open: {line:"¡Hola! Bienvenido. ¿Qué te preparo?", tr:"Merhaba, hoş geldin! Sana ne hazırlayayım?", hint:"Hola, un americano caliente, por favor.", hint_tr:"Merhaba, bir sıcak americano lütfen."},
+    phrases: [
+      ["barista","¿Qué te preparo?","Sana ne hazırlayayım?"],
+      ["sen","Un americano caliente, por favor.","Bir sıcak americano lütfen."],
+      ["barista","¿De qué tamaño?","Hangi boy?"],
+      ["sen","Grande, por favor.","Grande (orta-büyük) lütfen."],
+      ["barista","¿Para tomar acá o para llevar?","Burada mı içeceksin, götürecek misin?"],
+      ["sen","Para tomar acá.","Burada içeceğim."],
+      ["sen","Para llevar.","Götüreceğim."],
+      ["barista","¿Lo querés con leche?","Sütlü mü istersin?"],
+      ["sen","Sin leche, gracias.","Sütsüz, teşekkürler."],
+      ["barista","¿A nombre de quién?","Kimin adına? (bardağa yazmak için)"],
+      ["sen","Reşat. Se escribe con ere.","Reşat. R ile yazılıyor."],
+      ["sen","¿Dónde está el baño?","Tuvalet nerede?"],
+      ["barista","Al fondo, a la derecha.","En arkada, sağda."],
+      ["sen","¿El baño tiene código?","Tuvaletin şifresi var mı?"],
+      ["barista","Sí, el código está en el ticket.","Evet, şifre fişte yazıyor."],
+      ["sen","¿Cuál es la clave del wifi?","Wifi şifresi ne?"],
+      ["sen","¿Me la anotás, por favor?","Onu bana yazar mısın lütfen?"],
+      ["barista","¡Reşat, americano grande!","Reşat, grande americano!"],
+      ["sen","¡Gracias!","Teşekkürler!"]
+    ]
+  },
+  kiosco: {
+    name: "🚌 Kiosko · SUBE", role: "kiosquero",
+    setup: "Köşedeki kioskdasın. SUBE kartına para yükleyeceksin (cargar la SUBE) ve bir şey alacaksın.",
+    brief: "You are a kiosquero in Buenos Aires. The learner wants to top up their SUBE transport card (cargar la SUBE) and maybe buy something small (agua, alfajor). Ask how much to load, mention the card must be placed on the reader, give the change.",
+    open: {line:"Hola, ¿qué necesitás?", tr:"Merhaba, neye ihtiyacın var?", hint:"Hola, ¿me cargás la SUBE?", hint_tr:"Merhaba, SUBE'me para yükler misin?"},
+    phrases: [
+      ["kiosk","¿Cuánto te cargo?","Ne kadar yükleyeyim?"],
+      ["kiosk","Apoyá la tarjeta.","Kartı okuyucuya koy."],
+      ["sen","¿Me cargás la SUBE?","SUBE'ye yükleme yapar mısın?"],
+      ["sen","Cinco mil pesos, por favor.","Beş bin peso lütfen."],
+      ["sen","Y un agua sin gas.","Bir de gazsız su."],
+      ["sen","¿Tenés cambio?","Bozuk paran var mı?"]
+    ]
+  },
+  farmacia: {
+    name: "💊 Eczane", role: "farmacéutico",
+    setup: "Eczanedesin. Başın ağrıyor ya da boğazın; ne istediğini anlatacaksın.",
+    brief: "You are a pharmacist (farmacéutico) in Buenos Aires. The learner describes a mild symptom. Ask simple questions (desde cuándo, si tiene fiebre, si es alérgico), recommend an over-the-counter option, tell them how to take it, and suggest seeing a doctor if it doesn't improve. Never give risky medical advice.",
+    open: {line:"Hola, ¿en qué te puedo ayudar?", tr:"Merhaba, nasıl yardımcı olabilirim?", hint:"Hola, me duele la garganta.", hint_tr:"Merhaba, boğazım ağrıyor."},
+    phrases: [
+      ["eczacı","¿Desde cuándo?","Ne zamandan beri?"],
+      ["eczacı","¿Tenés fiebre?","Ateşin var mı?"],
+      ["sen","Me duele la cabeza.","Başım ağrıyor."],
+      ["sen","Me duele la garganta.","Boğazım ağrıyor."],
+      ["sen","¿Necesito receta?","Reçete lazım mı?"],
+      ["sen","¿Cada cuántas horas lo tomo?","Kaç saatte bir alayım?"]
+    ]
+  }
+};
+
+const BASICS = {
+  "👍 Tamam / Evet": [
+    ["Dale.","Tamam, olur. (Arjantin'de en çok bu)","dale"],
+    ["Sí. / No.","Evet. / Hayır.",""],
+    ["Bueno.","Peki, tamam.",""],
+    ["De una.","Hemen, tabii ki! (samimi)","de una"],
+    ["Listo.","Tamam, oldu, bitti.",""],
+    ["Claro.","Tabii.",""],
+    ["Perfecto.","Harika, tamamdır.",""],
+    ["Ni idea.","Hiç bilmiyorum.",""],
+    ["No pasa nada.","Önemli değil, sorun yok.",""]
+  ],
+  "🙏 Nezaket": [
+    ["Hola. / Chau.","Merhaba. / Görüşürüz.","Arjantin'de 'adiós' yerine 'chau'"],
+    ["Buen día. / Buenas tardes. / Buenas noches.","Günaydın. / İyi günler. / İyi akşamlar.",""],
+    ["Por favor.","Lütfen.",""],
+    ["Gracias. / Muchas gracias.","Teşekkürler. / Çok teşekkürler.",""],
+    ["De nada.","Rica ederim.",""],
+    ["Perdón.","Pardon, özür dilerim.",""],
+    ["Permiso.","Müsaadenizle, geçebilir miyim?",""],
+    ["Disculpá.","Affedersin (birine seslenirken).",""],
+    ["¿Todo bien?","Her şey yolunda mı? / Nasılsın?",""]
+  ],
+  "❓ Soru kelimeleri": [
+    ["¿Dónde?","Nerede?",""],
+    ["¿Dónde está el baño?","Tuvalet nerede?",""],
+    ["¿Qué?","Ne?",""],
+    ["¿Cuánto? / ¿Cuánto sale?","Ne kadar? / Kaç para?",""],
+    ["¿Cuándo?","Ne zaman?",""],
+    ["¿Cómo?","Nasıl? / Efendim?",""],
+    ["¿Quién?","Kim?",""],
+    ["¿Por qué?","Neden?",""],
+    ["¿Tenés…?","…var mı? (sende)",""],
+    ["¿Puedo…?","…yapabilir miyim?",""]
+  ],
+  "🧭 Yön ve yer": [
+    ["A la derecha.","Sağa / sağda.",""],
+    ["A la izquierda.","Sola / solda.",""],
+    ["Derecho.","Dümdüz.","'Todo derecho' = hep düz"],
+    ["Acá. / Allá.","Burada. / Orada.","Arjantin'de 'aquí' yerine 'acá'"],
+    ["Arriba. / Abajo.","Yukarıda. / Aşağıda.",""],
+    ["Al lado.","Yanında.",""],
+    ["Enfrente.","Karşısında.",""],
+    ["En la esquina.","Köşede.",""],
+    ["Cerca. / Lejos.","Yakın. / Uzak.",""],
+    ["La cuadra.","Blok (iki köşe arası).","'A dos cuadras' = iki blok ötede"]
+  ],
+  "⚠️ Dikkat / Bekle": [
+    ["¡Cuidado!","Dikkat!",""],
+    ["¡Ojo!","Dikkat et! (çok kullanılır)",""],
+    ["Esperá. / Esperá un momento.","Bekle. / Bir dakika bekle.","vos hâli: esperá"],
+    ["Pará.","Dur.",""],
+    ["Un segundito.","Bir saniyecik.",""],
+    ["Un toque.","Biraz, kısa bir süre. ('esperá un toque' = bir dakika bekle)","Tam Arjantin ifadesi"],
+    ["¡Ayuda!","İmdat!",""],
+    ["Despacio.","Yavaş.",""],
+    ["Rápido.","Hızlı.",""],
+    ["Está prohibido.","Yasak.",""]
+  ],
+  "😅 Anlamadım": [
+    ["No entiendo.","Anlamıyorum.",""],
+    ["¿Me repetís, por favor?","Tekrar eder misin lütfen?",""],
+    ["Más despacio, por favor.","Daha yavaş lütfen.",""],
+    ["Hablo poco castellano.","Az İspanyolca konuşuyorum.","Arjantin'de dile 'castellano' denir"],
+    ["¿Cómo se dice … en castellano?","… İspanyolcada nasıl denir?",""],
+    ["¿Qué significa…?","… ne demek?",""],
+    ["¿Hablás inglés?","İngilizce konuşuyor musun?",""]
+  ],
+  "⏰ Zaman": [
+    ["Ahora.","Şimdi.",""],
+    ["Ya.","Hemen / artık.","'Ya voy' = hemen geliyorum"],
+    ["Después.","Sonra.",""],
+    ["Hoy. / Mañana. / Ayer.","Bugün. / Yarın. / Dün.",""],
+    ["Más tarde.","Daha sonra.",""],
+    ["Siempre. / Nunca.","Her zaman. / Asla.",""],
+    ["¿A qué hora?","Saat kaçta?",""],
+    ["Todavía no.","Henüz değil.",""]
+  ],
+  "🔢 Sayılar ve para": [
+    ["Uno, dos, tres, cuatro, cinco.","1, 2, 3, 4, 5",""],
+    ["Seis, siete, ocho, nueve, diez.","6, 7, 8, 9, 10",""],
+    ["Once, doce, trece, catorce, quince.","11, 12, 13, 14, 15",""],
+    ["Veinte, treinta, cuarenta, cincuenta.","20, 30, 40, 50",""],
+    ["Sesenta, setenta, ochenta, noventa.","60, 70, 80, 90",""],
+    ["Cien. / Ciento veinte.","100 / 120","Tek başına 'cien', devamı varsa 'ciento'"],
+    ["Quinientos.","500",""],
+    ["Mil. / Dos mil. / Diez mil.","1.000 / 2.000 / 10.000",""],
+    ["Un millón.","1.000.000",""],
+    ["Cero.","0","Kodda: cuatro, cero, siete…"],
+    ["Son ocho mil quinientos.","8.500 (peso) ediyor.",""],
+    ["¿Cuánto es?","Ne kadar tutuyor?",""],
+    ["Una luca.","1.000 peso (argo)","'Diez lucas' = 10.000"],
+    ["Un palo.","1 milyon (argo)",""],
+    ["El vuelto.","Para üstü.",""],
+    ["¿Tenés más chico?","Daha küçük paran var mı? (bozuk)",""],
+    ["Pago en efectivo. / Te transfiero.","Nakit öderim. / Havale yaparım.",""],
+    ["¿Me pasás el alias?","Alias'ını (banka takma adı) verir misin?","Arjantin'de havale alias ile yapılır"]
+  ],
+  "🗣️ Arjantin argosu": [
+    ["Che.","Hey! / Baksana. (seslenme)","Her yerde kullanılır"],
+    ["Re.","Çok. ('re lindo' = çok güzel)",""],
+    ["Posta.","Gerçekten, cidden. ('¿posta?' = cidden mi?)",""],
+    ["Laburo. / Laburar.","İş. / Çalışmak.",""],
+    ["Quilombo.","Karmaşa, kaos, olay.",""],
+    ["Bondi.","Otobüs (colectivo).",""],
+    ["Birra.","Bira.",""],
+    ["Mina. / Pibe.","Kadın, kız. / Genç, oğlan.","Samimi, resmi yerde kullanma"],
+    ["Boludo.","Salak / kanka.","Arkadaşlar arasında 'kanka', yabancıya hakaret: dikkat!"],
+    ["Mango. / Guita.","Para (argo).",""],
+    ["Fiaca.","Üşengeçlik. ('me da fiaca' = üşeniyorum)",""],
+    ["Chamuyo.","Laf ebeliği, palavra.",""],
+    ["Bajón.","Moral bozukluğu. ('qué bajón' = ne kötü)",""],
+    ["Copado.","Havalı, iyi. ('re copado' = çok iyi)",""],
+    ["Mal. / Mal ahí.","Ne kötü! / Hiç hoş değil.",""],
+    ["Está todo bien.","Her şey yolunda, sorun yok.",""]
+  ],
+  "🏠 Komşu ve sohbet": [
+    ["Hola, soy Reşat. Vivo en el cuarto B.","Merhaba, ben Reşat. 4/B'de oturuyorum.",""],
+    ["Soy de Turquía.","Türkiye'liyim.",""],
+    ["Hace un año que vivo acá.","Bir yıldır burada yaşıyorum.",""],
+    ["¿Hace mucho que vivís acá?","Uzun zamandır mı burada yaşıyorsun?",""],
+    ["¿Y vos? ¿De dónde sos?","Ya sen? Nerelisin?",""],
+    ["Estoy aprendiendo castellano.","İspanyolca öğreniyorum.",""],
+    ["¡Qué calor! / ¡Qué frío!","Ne sıcak! / Ne soğuk!",""],
+    ["Parece que va a llover.","Yağmur yağacak gibi.",""],
+    ["Mucho gusto.","Memnun oldum.",""],
+    ["¿Cómo andás?","Nasılsın? (Arjantin usulü)",""],
+    ["Bien, ¿y vos?","İyiyim, ya sen?",""],
+    ["Todo tranqui.","Her şey sakin, iyi. (samimi)",""],
+    ["¡Que tengas buen finde!","İyi hafta sonları!",""],
+    ["Nos vemos.","Görüşürüz.",""],
+    ["Cualquier cosa, avisame.","Bir şey olursa haber ver.",""]
+  ],
+  "🔤 Harfler ve okunuş": [
+    ["A. Agua.","a · agua (su)","Türkçe 'a'"],
+    ["Be larga. Banco.","b · banco (banka)","Arjantin'de B'ye 'be larga' (uzun be) denir"],
+    ["Ce. Casa. Cena.","c · casa (ev), cena (akşam yemeği)","a/o/u önünde 'k', e/i önünde 's'"],
+    ["De. Dedo.","d · dedo (parmak)","Kelime içinde yumuşak, sonda neredeyse duyulmaz"],
+    ["E. Escuela.","e · escuela (okul)","Türkçe 'e'"],
+    ["Efe. Feria.","f · feria (pazar)",""],
+    ["Ge. Gato. Gente.","g · gato (kedi), gente (insanlar)","a/o/u önünde 'g', e/i önünde gırtlaktan 'h'"],
+    ["Hache. Hola.","h · hola (merhaba)","H hiç okunmaz: 'ola'"],
+    ["I. Isla.","i · isla (ada)","Türkçe 'i'"],
+    ["Jota. Jugo.","j · jugo (meyve suyu)","Gırtlaktan, Türkçe 'h'den sert"],
+    ["Ka. Kilo.","k · kilo","Sadece yabancı kelimelerde"],
+    ["Ele. Leche.","l · leche (süt)",""],
+    ["Eme. Mano.","m · mano (el)",""],
+    ["Ene. Noche.","n · noche (gece)",""],
+    ["Eñe. Niño.","ñ · niño (çocuk)","'ny' gibi: 'ninyo'"],
+    ["O. Ojo.","o · ojo (göz)","Türkçe 'o'"],
+    ["Pe. Pan.","p · pan (ekmek)",""],
+    ["Cu. Queso.","q · queso (peynir)","'qu' = 'k', u okunmaz: 'keso'"],
+    ["Ere. Pero.","r · pero (ama)","Kelime içinde tek vuruş, Türkçe 'r' gibi"],
+    ["Erre. Perro. Rosa.","rr · perro (köpek), rosa (gül)","'rr' ve baştaki 'r' titreşimli: 'rrr'"],
+    ["Ese. Sol.","s · sol (güneş)","Arjantin'de kelime sonundaki 's' bazen 'h' gibi yutulur"],
+    ["Te. Taza.","t · taza (fincan)",""],
+    ["U. Uva.","u · uva (üzüm)","Türkçe 'u'"],
+    ["Ve corta. Vaso.","v · vaso (bardak)","Arjantin'de 've corta' (kısa ve) denir. Türkçe 'v' değil, 'b' gibi okunur: 'baso'"],
+    ["Doble ve. Wifi.","w · wifi","'uifi' diye okunur"],
+    ["Equis. Taxi.","x · taxi","'ks'"],
+    ["I griega. Yo. Playa.","y · yo (ben), playa (plaj)","Arjantin'de 'ş' gibi: 'şo', 'plaşa'"],
+    ["Zeta. Zapato.","z · zapato (ayakkabı)","Arjantin'de düz 's': 'sapato'"],
+    ["Doble ele. Calle. Lluvia.","ll · calle (sokak), lluvia (yağmur)","Arjantin'de 'ş': 'kaşe', 'şuvia'"],
+    ["Che. Chau.","ch · chau (görüşürüz)","Türkçe 'ç'"],
+    ["¿Cómo se escribe?","Nasıl yazılıyor?",""],
+    ["¿Me lo deletreás?","Harf harf söyler misin?","deletrear = harf harf söylemek"],
+    ["Con be larga.","B ile (uzun be).",""],
+    ["Con ve corta.","V ile (kısa ve).",""],
+    ["Con doble ele.","LL ile.",""],
+    ["Con hache.","H ile.",""],
+    ["Todo junto.","Bitişik.",""],
+    ["Con mayúscula.","Büyük harfle.",""]
+  ],
+  "🕐 Saatler": [
+    ["¿Qué hora es?","Saat kaç?",""],
+    ["¿Tenés hora?","Saatin var mı? (sokakta saat sorma)","Yabancıya böyle sorulur"],
+    ["Es la una.","Saat bir.","Sadece 1 için 'es la', diğerleri 'son las'"],
+    ["Son las dos.","Saat iki.",""],
+    ["Son las tres y cuarto.","Üçü çeyrek geçiyor.","y = geçe"],
+    ["Son las cuatro y media.","Dört buçuk.",""],
+    ["Son las seis y diez.","Altıyı on geçiyor.",""],
+    ["Son las cinco menos cuarto.","Beşe çeyrek var.","menos = -e var"],
+    ["Faltan diez para las siete.","Yediye on var.","Arjantin'de çok yaygın"],
+    ["Son las ocho en punto.","Tam sekiz.","en punto = tam"],
+    ["Son las tres y pico.","Üçü biraz geçiyor.","y pico = küsur, porteño"],
+    ["Tipo cinco.","Beş gibi, beş civarı.","Arjantin'de çok kullanılır"],
+    ["A eso de las nueve.","Dokuz sularında.",""],
+    ["Son las nueve de la mañana.","Sabah dokuz.",""],
+    ["Son las tres de la tarde.","Öğleden sonra üç.",""],
+    ["Son las diez de la noche.","Akşam on.",""],
+    ["Es mediodía. / Es medianoche.","Öğlen on iki. / Gece yarısı.",""],
+    ["A la mañana. / A la tarde. / A la noche.","Sabah. / Öğleden sonra. / Akşam.","Arjantin'de 'por la' değil 'a la' denir"],
+    ["¿A qué hora abren?","Kaçta açıyorsunuz?",""],
+    ["¿Hasta qué hora está abierto?","Saat kaça kadar açık?",""],
+    ["Abre a las nueve y cierra a las veinte.","Dokuzda açılıyor, akşam sekizde kapanıyor.","Dükkân saatleri 24 saatle söylenir: 20 = akşam 8"],
+    ["De nueve a veinte.","Dokuzdan yirmiye (09:00–20:00).","Tabelada '9 a 20 hs' yazar"],
+    ["Llega hoy entre las catorce y las dieciocho.","Bugün 14 ile 18 arasında gelir.","Mercado Libre teslimat mesajı"],
+    ["¿Te viene bien a las cinco?","Beş sana uyar mı?",""],
+    ["Llego en diez minutos.","On dakikaya geliyorum.",""],
+    ["Estoy llegando.","Geliyorum, yoldayım.","Porteño klasiği: bazen henüz evden çıkmamış demek 😄"],
+    ["Llegué tarde. / Llegué temprano.","Geç kaldım. / Erken geldim.",""],
+    ["Cenamos a las diez.","Akşam yemeğini onda yiyoruz.","Buenos Aires'te akşam yemeği 21–22'de"]
+  ],
+  "📅 Günler": [
+    ["Lunes, martes, miércoles.","Pazartesi, salı, çarşamba.","Gün adları küçük harfle yazılır"],
+    ["Jueves, viernes.","Perşembe, cuma.",""],
+    ["Sábado, domingo.","Cumartesi, pazar.",""],
+    ["¿Qué día es hoy?","Bugün günlerden ne?",""],
+    ["Hoy es martes.","Bugün salı.",""],
+    ["El lunes.","Pazartesi günü.","'el lunes' = pazartesi (günü); 'en lunes' denmez"],
+    ["Los sábados.","Cumartesileri, her cumartesi.",""],
+    ["El lunes que viene.","Gelecek pazartesi.","Arjantin'de 'el próximo' yerine çok kullanılır"],
+    ["El viernes pasado.","Geçen cuma.",""],
+    ["Pasado mañana.","Öbür gün.",""],
+    ["Anteayer.","Evvelsi gün.",""],
+    ["La semana que viene.","Gelecek hafta.",""],
+    ["Esta semana. / El mes que viene.","Bu hafta. / Gelecek ay.",""],
+    ["El finde.","Hafta sonu.","fin de semana'nın porteño kısaltması"],
+    ["De lunes a viernes.","Pazartesiden cumaya.","Tabelalarda 'Lun a Vie' yazar"],
+    ["¿Abren los domingos?","Pazar günleri açık mısınız?",""],
+    ["Mañana es feriado.","Yarın resmî tatil.","feriado = resmî tatil"],
+    ["Es fin de semana largo.","Uzun hafta sonu.","Arjantin'de tatil pazartesiye denk gelince çok olur"],
+    ["¿Qué fecha es hoy?","Bugün ayın kaçı?",""],
+    ["Hoy es diecisiete de noviembre.","Bugün 17 Kasım.","Tarih: gün + de + ay"],
+    ["Enero, febrero, marzo, abril.","Ocak, şubat, mart, nisan.",""],
+    ["Mayo, junio, julio, agosto.","Mayıs, haziran, temmuz, ağustos.",""],
+    ["Septiembre, octubre, noviembre, diciembre.","Eylül, ekim, kasım, aralık.","Arjantin'de 'setiembre' de denir"],
+    ["El primero de mayo.","1 Mayıs.","Ayın 1'i için 'el primero' denir"],
+    ["¿Qué día te viene bien?","Hangi gün sana uyar?",""],
+    ["¿Nos vemos el jueves?","Perşembe görüşelim mi?",""],
+    ["Te lo traen el miércoles.","Çarşamba getiriyorlar.","Kargo ya da sipariş için"]
+  ],
+  "👄 Okunuş kuralları": [
+    ["Pero.", "Ama.", "Tek R: dil damağa bir kez hızlıca dokunur. Neredeyse 'pedo' gibi, Türkçe R'den kısa"],
+    ["Caro.", "Pahalı.", "'kado' der gibi, dil tek dokunuş"],
+    ["Para.", "İçin.", "Para değil! Arjantin'de para = 'plata'. Okunuş: 'pada' gibi"],
+    ["Hablar, caminar, cantar.", "Konuşmak, yürümek, şarkı söylemek.", "Sondaki R de tek ve yumuşak dokunuş"],
+    ["Perro.", "Köpek.", "Çift RR: dil titrer, Türkçe R'yi uzat: 'perrro'"],
+    ["Pero. Perro.", "Ama. Köpek.", "Tek R kısa, RR titreşimli: anlam değişir"],
+    ["Caro. Carro.", "Pahalı. Araba.", "Arjantin'de araba = 'auto'; 'carro' el arabası"],
+    ["Rápido. Rosario.", "Hızlı. Rosario şehri.", "Kelime başındaki R de RR gibi titreşimli"],
+    ["Vamos.", "Gidelim.", "V yok, B gibi okunur: 'bamos'"],
+    ["Voy.", "Gidiyorum.", "'boy'"],
+    ["Vos.", "Sen (Arjantin).", "'bos'"],
+    ["¿Venís?", "Geliyor musun?", "'benís'"],
+    ["Vino. Bueno.", "Şarap. İyi.", "İkisi de aynı B sesiyle başlar"],
+    ["Nueve. Llevo.", "Dokuz. Götürüyorum.", "Ünlüler arasında B/V çok yumuşak, dudaklar tam kapanmaz"],
+    ["Jota.", "J harfi.", "J = boğazdan sert H, aynayı buğular gibi nefes ver"],
+    ["Jugo.", "Meyve suyu.", "'hugo'"],
+    ["Trabajo.", "İş.", "'trabaho'"],
+    ["Gente.", "İnsanlar.", "G + E/İ = aynı sert H: 'hente'"],
+    ["Mujer. Jamón.", "Kadın. Jambon.", "'muher', 'hamón'"],
+    ["Hola.", "Merhaba.", "H hiç okunmaz: 'ola'"],
+    ["Hoy.", "Bugün.", "'oy'"],
+    ["Ahora.", "Şimdi.", "'aora'"],
+    ["Hablo. Hasta mañana.", "Konuşuyorum. Yarın görüşürüz.", "'ablo', 'asta mañana'"],
+    ["Chau. Mucho.", "Hoşça kal. Çok.", "CH = Türkçe Ç: 'çau', 'muço'"],
+    ["¿Cómo te llamás?", "Adın ne?", "Arjantin'de LL = 'ş': 'kómo te şamás' (vos ile llamás)"],
+    ["Me llamo Ana.", "Benim adım Ana.", "'me şamo'"],
+    ["Calle.", "Sokak.", "'kaşe'"],
+    ["Pollo.", "Tavuk.", "'poşo'"],
+    ["Lluvia.", "Yağmur.", "'şubia'"],
+    ["Yo.", "Ben.", "Y de 'ş': 'şo'"],
+    ["Ya voy.", "Geliyorum, hemen.", "'şa boy'"],
+    ["Yogur. Playa.", "Yoğurt. Plaj.", "'şogur', 'plaşa'"],
+    ["Mismo.", "Aynı.", "Ünsüzden önce S yumuşar, 'h' gibi: 'mihmo'"],
+    ["¿Está?", "Var mı? / Orada mı?", "'ehtá'"],
+    ["Los chicos.", "Çocuklar.", "Sondaki S hafifler: 'loh çikoh'"],
+    ["Nada. Todo.", "Hiç. Her şey.", "Ünlüler arasında D çok yumuşak, dil dişe hafifçe değer"],
+    ["Cansado.", "Yorgun.", "Konuşmada 'kansao' gibi duyabilirsin"],
+    ["Usted. Ciudad.", "Siz. Şehir.", "Sondaki D neredeyse duyulmaz: 'usté', 'siudá'"]
+  ]
+};
+let bgroup = Object.keys(BASICS)[0];
+function renderBasics(){
+  const g = $("#bgroups"); g.innerHTML = "";
+  for (const k of Object.keys(BASICS)){
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = k; b.setAttribute("aria-pressed", k === bgroup);
+    b.onclick = () => { stopShadow(); bgroup = k; renderBasics(); };
+    g.append(b);
+  }
+  const box = $("#bwords"); box.innerHTML = "";
+  for (const [es,tr,tip] of BASICS[bgroup]){
+    const row = document.createElement("div"); row.className = "ph"; row.dataset.t = es.replace(/ \/ /g, ". ");
+    const t = document.createElement("div");
+    t.innerHTML = `<div class="es"></div><div class="tr"></div>`;
+    t.querySelector(".es").textContent = es;
+    t.querySelector(".tr").textContent = tr + (tip ? " · " + tip : "");
+    row.append(spkBtn(es.replace(/ \/ /g, ". ")), t); box.append(row);
+  }
+}
+
+const LEVELS = {
+  A1: "Beginner (A1): use very short, simple sentences (max ~8 words), common words, speak slowly.",
+  A2: "Elementary (A2): short everyday sentences, a little Buenos Aires slang.",
+  B1: "Intermediate (B1): natural speed and normal porteño slang (che, dale, re, laburo, bondi) as a real person would."
+};
+
+const $ = s => document.querySelector(s);
+let sceneKey = "kargo", level = "A1", turns = [], busy = false, lastHint = null, ended = false;
+let mistakes = [];
+/* ---------- profiles: each person has own scene, level and mistakes; synced per Claude account via db, cached in localStorage ---------- */
+const EMOJIS = ["🧉","🌞","💃","⚽","🥟","🐶","🌸","🎸"];
+let state = null, dbDoc = null, saveTimer = null;
+function newId(){ return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function loadLocal(){
+  try { const st = JSON.parse(localStorage.getItem("eb-state") || "null"); if (st && st.profiles && Object.keys(st.profiles).length) return st; } catch {}
+  let m = [], pr = {};
+  try { m = JSON.parse(localStorage.getItem("eb-mistakes") || "[]"); } catch {}
+  try { pr = JSON.parse(localStorage.getItem("eb-prefs") || "{}"); } catch {}
+  const id = newId();
+  return {active: id, profiles: {[id]: {name: "Ben", emoji: "🧉", scene: pr.scene || "kargo", level: pr.level || "A1", mistakes: m}}};
+}
+function cur(){ return state.profiles[state.active]; }
+function applyProfile(){
+  const p = cur();
+  sceneKey = SCENES[p.scene] ? p.scene : "kargo";
+  level = LEVELS[p.level] ? p.level : "A1";
+  mistakes = Array.isArray(p.mistakes) ? p.mistakes : [];
+}
+function saveState(){
+  const p = cur(); p.scene = sceneKey; p.level = level; p.mistakes = mistakes;
+  try { localStorage.setItem("eb-state", JSON.stringify(state)); } catch {}
+  if (!dbDoc) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    $("#sync").textContent = "· kaydediliyor…";
+    dbDoc.set({json: JSON.stringify(state), at: Date.now()})
+      .then(() => { $("#sync").textContent = "· ☁️ eşitlendi"; })
+      .catch(() => { $("#sync").textContent = "· bu cihazda kayıtlı"; });
+  }, 800);
+}
+state = loadLocal(); applyProfile();
+
+let newEmoji = EMOJIS[1];
+function renderWho(){
+  const box = $("#who"); box.innerHTML = "";
+  for (const [id,p] of Object.entries(state.profiles)){
+    const b = document.createElement("button"); b.className = "chip";
+    b.textContent = `${p.emoji} ${p.name}`; b.setAttribute("aria-pressed", id === state.active);
+    b.onclick = () => {
+      if (busy) return;
+      if (id === state.active){ askRemove(id, b); return; }
+      saveState(); stopShadow(); state.active = id; applyProfile(); saveState();
+      renderWho(); renderScenes(); startScene(); renderMistakes();
+    };
+    box.append(b);
+  }
+  const add = document.createElement("button"); add.className = "chip add"; add.textContent = "+ Kişi ekle";
+  add.onclick = () => { $("#newp").hidden = false; $("#pname").value = ""; renderEmo(); $("#pname").focus(); };
+  box.append(add);
+}
+function askRemove(id, b){
+  if (Object.keys(state.profiles).length < 2) return;
+  if (b.dataset.armed){ delete state.profiles[id]; state.active = Object.keys(state.profiles)[0]; applyProfile(); saveState(); renderWho(); renderScenes(); startScene(); renderMistakes(); return; }
+  b.dataset.armed = "1"; b.textContent = "Silinsin mi? Tekrar dokun";
+  setTimeout(() => renderWho(), 3000);
+}
+function renderEmo(){
+  const box = $("#pemo"); box.innerHTML = "";
+  for (const e of EMOJIS){
+    const b = document.createElement("button"); b.textContent = e; b.setAttribute("aria-pressed", e === newEmoji); b.setAttribute("aria-label", e);
+    b.onclick = () => { newEmoji = e; renderEmo(); };
+    box.append(b);
+  }
+}
+$("#pcancel").onclick = () => { $("#newp").hidden = true; };
+$("#psave").onclick = () => {
+  const name = $("#pname").value.trim(); if (!name) { $("#pname").focus(); return; }
+  saveState(); stopShadow();
+  const id = newId(); state.profiles[id] = {name, emoji: newEmoji, scene: "kargo", level: "A1", mistakes: []};
+  state.active = id; applyProfile(); saveState(); $("#newp").hidden = true;
+  renderWho(); renderScenes(); startScene(); renderMistakes();
+};
+$("#pname").addEventListener("keydown", e => { if (e.key === "Enter") $("#psave").click(); });
+
+/* ---------- speech ---------- */
+let ttsCap = null, esVoice = null;
+function pickVoice(){
+  if (!("speechSynthesis" in window)) return;
+  const vs = speechSynthesis.getVoices();
+  esVoice = vs.find(v => /es[-_]AR/i.test(v.lang)) || vs.find(v => /es[-_](UY|419|MX|US)/i.test(v.lang)) || vs.find(v => /^es/i.test(v.lang)) || null;
+}
+if ("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+const AUDIO = /*AUDIO*/{"¡Hola! Mercado Libre. Tengo un paquete para el 4° B. ¿Bajás?":"audio/o-kargo.mp3","¡Hola! Sí, ya bajo. Un minuto.":"audio/h-kargo.mp3","¿Bajás?":"audio/s-kargo-0.mp3","¿Me pasás el código?":"audio/s-kargo-1.mp3","¿Me decís tu DNI?":"audio/s-kargo-2.mp3","Firmame acá.":"audio/s-kargo-3.mp3","¡Ya bajo!":"audio/s-kargo-4.mp3","Ahí voy, un minuto.":"audio/s-kargo-5.mp3","El código es cuatro, siete, dos, nueve.":"audio/s-kargo-6.mp3","Mi DNI es noventa y cinco millones…":"audio/s-kargo-7.mp3","¡Gracias! Que tengas buen día.":"audio/s-kargo-8.mp3","¡Buen día! ¿Qué te doy?":"audio/o-verduleria.mp3","Buen día. Dame un kilo de tomates, por favor.":"audio/h-verduleria.mp3","¿Qué te doy?":"audio/s-verduleria-0.mp3","¿Algo más?":"audio/s-verduleria-1.mp3","¿Efectivo o transferencia?":"audio/s-verduleria-2.mp3","Dame un kilo de…":"audio/s-verduleria-3.mp3","Medio kilo de papas.":"audio/s-verduleria-4.mp3","¿Cuánto sale?":"audio/s-verduleria-5.mp3","Nada más, gracias.":"audio/s-verduleria-6.mp3","¿Aceptás Mercado Pago?":"audio/s-verduleria-7.mp3","¡Hola! ¿Buscás algo en particular?":"audio/o-bazar.mp3","Hola, sí. Busco una lámpara para la mesa de luz.":"audio/h-bazar.mp3","¿Buscás algo en particular?":"audio/s-bazar-0.mp3","Estoy mirando, gracias.":"audio/s-bazar-1.mp3","¿Tenés uno nuevo, en caja?":"audio/s-bazar-2.mp3","¿Lo tenés en otro color?":"audio/s-bazar-3.mp3","¿Tenés uno más grande?":"audio/s-bazar-4.mp3","¿Tenés uno más chico?":"audio/s-bazar-5.mp3","¿Tenés algo más barato?":"audio/s-bazar-6.mp3","¿Tenés uno de mejor calidad?":"audio/s-bazar-7.mp3","¿Cuál es la diferencia?":"audio/s-bazar-8.mp3","¿Cuál me recomendás?":"audio/s-bazar-9.mp3","¿Me lo mostrás?":"audio/s-bazar-10.mp3","¿Tiene garantía?":"audio/s-bazar-11.mp3","Si no anda, ¿lo puedo cambiar?":"audio/s-bazar-12.mp3","¿Me hacés un descuento en efectivo?":"audio/s-bazar-13.mp3","Me lo llevo.":"audio/s-bazar-14.mp3","Es el último que me queda.":"audio/s-bazar-15.mp3","En ese color no me queda.":"audio/s-bazar-16.mp3","Este sale más, pero dura más.":"audio/s-bazar-17.mp3","En efectivo te hago un diez por ciento.":"audio/s-bazar-18.mp3","Para cambios, guardá el ticket.":"audio/s-bazar-19.mp3","¿Es para regalo?":"audio/s-bazar-20.mp3","¡Hola! Bienvenido. ¿Qué te preparo?":"audio/o-cafe.mp3","Hola, un americano caliente, por favor.":"audio/h-cafe.mp3","¿Qué te preparo?":"audio/s-cafe-0.mp3","Un americano caliente, por favor.":"audio/s-cafe-1.mp3","¿De qué tamaño?":"audio/s-cafe-2.mp3","Grande, por favor.":"audio/s-cafe-3.mp3","¿Para tomar acá o para llevar?":"audio/s-cafe-4.mp3","Para tomar acá.":"audio/s-cafe-5.mp3","Para llevar.":"audio/s-cafe-6.mp3","¿Lo querés con leche?":"audio/s-cafe-7.mp3","Sin leche, gracias.":"audio/s-cafe-8.mp3","¿A nombre de quién?":"audio/s-cafe-9.mp3","Reşat. Se escribe con ere.":"audio/s-cafe-10.mp3","¿Dónde está el baño?":"audio/b-2-1.mp3","Al fondo, a la derecha.":"audio/s-cafe-12.mp3","¿El baño tiene código?":"audio/s-cafe-13.mp3","Sí, el código está en el ticket.":"audio/s-cafe-14.mp3","¿Cuál es la clave del wifi?":"audio/s-cafe-15.mp3","¿Me la anotás, por favor?":"audio/s-cafe-16.mp3","¡Reşat, americano grande!":"audio/s-cafe-17.mp3","¡Gracias!":"audio/s-cafe-18.mp3","Hola, ¿qué necesitás?":"audio/o-kiosco.mp3","Hola, ¿me cargás la SUBE?":"audio/h-kiosco.mp3","¿Cuánto te cargo?":"audio/s-kiosco-0.mp3","Apoyá la tarjeta.":"audio/s-kiosco-1.mp3","¿Me cargás la SUBE?":"audio/s-kiosco-2.mp3","Cinco mil pesos, por favor.":"audio/s-kiosco-3.mp3","Y un agua sin gas.":"audio/s-kiosco-4.mp3","¿Tenés cambio?":"audio/s-kiosco-5.mp3","Hola, ¿en qué te puedo ayudar?":"audio/o-farmacia.mp3","Hola, me duele la garganta.":"audio/h-farmacia.mp3","¿Desde cuándo?":"audio/s-farmacia-0.mp3","¿Tenés fiebre?":"audio/s-farmacia-1.mp3","Me duele la cabeza.":"audio/s-farmacia-2.mp3","Me duele la garganta.":"audio/s-farmacia-3.mp3","¿Necesito receta?":"audio/s-farmacia-4.mp3","¿Cada cuántas horas lo tomo?":"audio/s-farmacia-5.mp3","Dale.":"audio/b-0-0.mp3","Sí.. No.":"audio/b-0-1.mp3","Bueno.":"audio/b-0-2.mp3","De una.":"audio/b-0-3.mp3","Listo.":"audio/b-0-4.mp3","Claro.":"audio/b-0-5.mp3","Perfecto.":"audio/b-0-6.mp3","Ni idea.":"audio/b-0-7.mp3","No pasa nada.":"audio/b-0-8.mp3","Hola.. Chau.":"audio/b-1-0.mp3","Buen día.. Buenas tardes.. Buenas noches.":"audio/b-1-1.mp3","Por favor.":"audio/b-1-2.mp3","Gracias.. Muchas gracias.":"audio/b-1-3.mp3","De nada.":"audio/b-1-4.mp3","Perdón.":"audio/b-1-5.mp3","Permiso.":"audio/b-1-6.mp3","Disculpá.":"audio/b-1-7.mp3","¿Todo bien?":"audio/b-1-8.mp3","¿Dónde?":"audio/b-2-0.mp3","¿Qué?":"audio/b-2-2.mp3","¿Cuánto?. ¿Cuánto sale?":"audio/b-2-3.mp3","¿Cuándo?":"audio/b-2-4.mp3","¿Cómo?":"audio/b-2-5.mp3","¿Quién?":"audio/b-2-6.mp3","¿Por qué?":"audio/b-2-7.mp3","¿Tenés…?":"audio/b-2-8.mp3","¿Puedo…?":"audio/b-2-9.mp3","A la derecha.":"audio/b-3-0.mp3","A la izquierda.":"audio/b-3-1.mp3","Derecho.":"audio/b-3-2.mp3","Acá.. Allá.":"audio/b-3-3.mp3","Arriba.. Abajo.":"audio/b-3-4.mp3","Al lado.":"audio/b-3-5.mp3","Enfrente.":"audio/b-3-6.mp3","En la esquina.":"audio/b-3-7.mp3","Cerca.. Lejos.":"audio/b-3-8.mp3","La cuadra.":"audio/b-3-9.mp3","¡Cuidado!":"audio/b-4-0.mp3","¡Ojo!":"audio/b-4-1.mp3","Esperá.. Esperá un momento.":"audio/b-4-2.mp3","Pará.":"audio/b-4-3.mp3","Un segundito.":"audio/b-4-4.mp3","Un toque.":"audio/b-4-5.mp3","¡Ayuda!":"audio/b-4-6.mp3","Despacio.":"audio/b-4-7.mp3","Rápido.":"audio/b-4-8.mp3","Está prohibido.":"audio/b-4-9.mp3","No entiendo.":"audio/b-5-0.mp3","¿Me repetís, por favor?":"audio/b-5-1.mp3","Más despacio, por favor.":"audio/b-5-2.mp3","Hablo poco castellano.":"audio/b-5-3.mp3","¿Cómo se dice … en castellano?":"audio/b-5-4.mp3","¿Qué significa…?":"audio/b-5-5.mp3","¿Hablás inglés?":"audio/b-5-6.mp3","Ahora.":"audio/b-6-0.mp3","Ya.":"audio/b-6-1.mp3","Después.":"audio/b-6-2.mp3","Hoy.. Mañana.. Ayer.":"audio/b-6-3.mp3","Más tarde.":"audio/b-6-4.mp3","Siempre.. Nunca.":"audio/b-6-5.mp3","¿A qué hora?":"audio/b-6-6.mp3","Todavía no.":"audio/b-6-7.mp3","Uno, dos, tres, cuatro, cinco.":"audio/b-7-0.mp3","Seis, siete, ocho, nueve, diez.":"audio/b-7-1.mp3","Once, doce, trece, catorce, quince.":"audio/b-7-2.mp3","Veinte, treinta, cuarenta, cincuenta.":"audio/b-7-3.mp3","Sesenta, setenta, ochenta, noventa.":"audio/b-7-4.mp3","Cien.. Ciento veinte.":"audio/b-7-5.mp3","Quinientos.":"audio/b-7-6.mp3","Mil.. Dos mil.. Diez mil.":"audio/b-7-7.mp3","Un millón.":"audio/b-7-8.mp3","Cero.":"audio/b-7-9.mp3","Son ocho mil quinientos.":"audio/b-7-10.mp3","¿Cuánto es?":"audio/b-7-11.mp3","Una luca.":"audio/b-7-12.mp3","Un palo.":"audio/b-7-13.mp3","El vuelto.":"audio/b-7-14.mp3","¿Tenés más chico?":"audio/b-7-15.mp3","Pago en efectivo.. Te transfiero.":"audio/b-7-16.mp3","¿Me pasás el alias?":"audio/b-7-17.mp3","Che.":"audio/b-8-0.mp3","Re.":"audio/b-8-1.mp3","Posta.":"audio/b-8-2.mp3","Laburo.. Laburar.":"audio/b-8-3.mp3","Quilombo.":"audio/b-8-4.mp3","Bondi.":"audio/b-8-5.mp3","Birra.":"audio/b-8-6.mp3","Mina.. Pibe.":"audio/b-8-7.mp3","Boludo.":"audio/b-8-8.mp3","Mango.. Guita.":"audio/b-8-9.mp3","Fiaca.":"audio/b-8-10.mp3","Chamuyo.":"audio/b-8-11.mp3","Bajón.":"audio/b-8-12.mp3","Copado.":"audio/b-8-13.mp3","Mal.. Mal ahí.":"audio/b-8-14.mp3","Está todo bien.":"audio/b-8-15.mp3","Hola, soy Reşat. Vivo en el cuarto B.":"audio/b-9-0.mp3","Soy de Turquía.":"audio/b-9-1.mp3","Hace un año que vivo acá.":"audio/b-9-2.mp3","¿Hace mucho que vivís acá?":"audio/b-9-3.mp3","¿Y vos? ¿De dónde sos?":"audio/b-9-4.mp3","Estoy aprendiendo castellano.":"audio/b-9-5.mp3","¡Qué calor!. ¡Qué frío!":"audio/b-9-6.mp3","Parece que va a llover.":"audio/b-9-7.mp3","Mucho gusto.":"audio/b-9-8.mp3","¿Cómo andás?":"audio/b-9-9.mp3","Bien, ¿y vos?":"audio/b-9-10.mp3","Todo tranqui.":"audio/b-9-11.mp3","¡Que tengas buen finde!":"audio/b-9-12.mp3","Nos vemos.":"audio/b-9-13.mp3","Cualquier cosa, avisame.":"audio/b-9-14.mp3","A. Agua.":"audio/b-10-0.mp3","Be larga. Banco.":"audio/b-10-1.mp3","Ce. Casa. Cena.":"audio/b-10-2.mp3","De. Dedo.":"audio/b-10-3.mp3","E. Escuela.":"audio/b-10-4.mp3","Efe. Feria.":"audio/b-10-5.mp3","Ge. Gato. Gente.":"audio/b-10-6.mp3","Hache. Hola.":"audio/b-10-7.mp3","I. Isla.":"audio/b-10-8.mp3","Jota. Jugo.":"audio/b-10-9.mp3","Ka. Kilo.":"audio/b-10-10.mp3","Ele. Leche.":"audio/b-10-11.mp3","Eme. Mano.":"audio/b-10-12.mp3","Ene. Noche.":"audio/b-10-13.mp3","Eñe. Niño.":"audio/b-10-14.mp3","O. Ojo.":"audio/b-10-15.mp3","Pe. Pan.":"audio/b-10-16.mp3","Cu. Queso.":"audio/b-10-17.mp3","Ere. Pero.":"audio/b-10-18.mp3","Erre. Perro. Rosa.":"audio/b-10-19.mp3","Ese. Sol.":"audio/b-10-20.mp3","Te. Taza.":"audio/b-10-21.mp3","U. Uva.":"audio/b-10-22.mp3","Ve corta. Vaso.":"audio/b-10-23.mp3","Doble ve. Wifi.":"audio/b-10-24.mp3","Equis. Taxi.":"audio/b-10-25.mp3","I griega. Yo. Playa.":"audio/b-10-26.mp3","Zeta. Zapato.":"audio/b-10-27.mp3","Doble ele. Calle. Lluvia.":"audio/b-10-28.mp3","Che. Chau.":"audio/b-10-29.mp3","¿Cómo se escribe?":"audio/b-10-30.mp3","¿Me lo deletreás?":"audio/b-10-31.mp3","Con be larga.":"audio/b-10-32.mp3","Con ve corta.":"audio/b-10-33.mp3","Con doble ele.":"audio/b-10-34.mp3","Con hache.":"audio/b-10-35.mp3","Todo junto.":"audio/b-10-36.mp3","Con mayúscula.":"audio/b-10-37.mp3","¿Qué hora es?":"audio/b-11-0.mp3","¿Tenés hora?":"audio/b-11-1.mp3","Es la una.":"audio/b-11-2.mp3","Son las dos.":"audio/b-11-3.mp3","Son las tres y cuarto.":"audio/b-11-4.mp3","Son las cuatro y media.":"audio/b-11-5.mp3","Son las seis y diez.":"audio/b-11-6.mp3","Son las cinco menos cuarto.":"audio/b-11-7.mp3","Faltan diez para las siete.":"audio/b-11-8.mp3","Son las ocho en punto.":"audio/b-11-9.mp3","Son las tres y pico.":"audio/b-11-10.mp3","Tipo cinco.":"audio/b-11-11.mp3","A eso de las nueve.":"audio/b-11-12.mp3","Son las nueve de la mañana.":"audio/b-11-13.mp3","Son las tres de la tarde.":"audio/b-11-14.mp3","Son las diez de la noche.":"audio/b-11-15.mp3","Es mediodía.. Es medianoche.":"audio/b-11-16.mp3","A la mañana.. A la tarde.. A la noche.":"audio/b-11-17.mp3","¿A qué hora abren?":"audio/b-11-18.mp3","¿Hasta qué hora está abierto?":"audio/b-11-19.mp3","Abre a las nueve y cierra a las veinte.":"audio/b-11-20.mp3","De nueve a veinte.":"audio/b-11-21.mp3","Llega hoy entre las catorce y las dieciocho.":"audio/b-11-22.mp3","¿Te viene bien a las cinco?":"audio/b-11-23.mp3","Llego en diez minutos.":"audio/b-11-24.mp3","Estoy llegando.":"audio/b-11-25.mp3","Llegué tarde.. Llegué temprano.":"audio/b-11-26.mp3","Cenamos a las diez.":"audio/b-11-27.mp3","¿Cómo lo vas a pagar?":"audio/s-bazar-21.mp3","¿Débito o crédito?":"audio/s-bazar-22.mp3","¿Lo querés en cuotas?":"audio/s-bazar-23.mp3","Tenés tres cuotas sin interés.":"audio/s-bazar-24.mp3","Con esta tarjeta tenés seis cuotas.":"audio/s-bazar-25.mp3","¿En cuántas cuotas lo puedo pagar?":"audio/s-bazar-26.mp3","¿Son sin interés?":"audio/s-bazar-27.mp3","¿De cuánto es cada cuota?":"audio/s-bazar-28.mp3","En tres cuotas, por favor.":"audio/s-bazar-29.mp3","En un pago.":"audio/s-bazar-30.mp3","Llevando dos, la segunda unidad al cincuenta por ciento.":"audio/s-bazar-31.mp3","Hay dos por uno.":"audio/s-bazar-32.mp3","¿El descuento es en la segunda unidad?":"audio/s-bazar-33.mp3","¿La promo es con cualquier tarjeta?":"audio/s-bazar-34.mp3","Esa promo es solo en efectivo.":"audio/s-bazar-35.mp3","Lunes, martes, miércoles.":"audio/b-12-0.mp3","Jueves, viernes.":"audio/b-12-1.mp3","Sábado, domingo.":"audio/b-12-2.mp3","¿Qué día es hoy?":"audio/b-12-3.mp3","Hoy es martes.":"audio/b-12-4.mp3","El lunes.":"audio/b-12-5.mp3","Los sábados.":"audio/b-12-6.mp3","El lunes que viene.":"audio/b-12-7.mp3","El viernes pasado.":"audio/b-12-8.mp3","Pasado mañana.":"audio/b-12-9.mp3","Anteayer.":"audio/b-12-10.mp3","La semana que viene.":"audio/b-12-11.mp3","Esta semana.. El mes que viene.":"audio/b-12-12.mp3","El finde.":"audio/b-12-13.mp3","De lunes a viernes.":"audio/b-12-14.mp3","¿Abren los domingos?":"audio/b-12-15.mp3","Mañana es feriado.":"audio/b-12-16.mp3","Es fin de semana largo.":"audio/b-12-17.mp3","¿Qué fecha es hoy?":"audio/b-12-18.mp3","Hoy es diecisiete de noviembre.":"audio/b-12-19.mp3","Enero, febrero, marzo, abril.":"audio/b-12-20.mp3","Mayo, junio, julio, agosto.":"audio/b-12-21.mp3","Septiembre, octubre, noviembre, diciembre.":"audio/b-12-22.mp3","El primero de mayo.":"audio/b-12-23.mp3","¿Qué día te viene bien?":"audio/b-12-24.mp3","¿Nos vemos el jueves?":"audio/b-12-25.mp3","Te lo traen el miércoles.":"audio/b-12-26.mp3","Pero.":"audio/b-13-0.mp3","Caro.":"audio/b-13-1.mp3","Para.":"audio/b-13-2.mp3","Hablar, caminar, cantar.":"audio/b-13-3.mp3","Perro.":"audio/b-13-4.mp3","Pero. Perro.":"audio/b-13-5.mp3","Caro. Carro.":"audio/b-13-6.mp3","Rápido. Rosario.":"audio/b-13-7.mp3","Vamos.":"audio/b-13-8.mp3","Voy.":"audio/b-13-9.mp3","Vos.":"audio/b-13-10.mp3","¿Venís?":"audio/b-13-11.mp3","Vino. Bueno.":"audio/b-13-12.mp3","Nueve. Llevo.":"audio/b-13-13.mp3","Jota.":"audio/b-13-14.mp3","Jugo.":"audio/b-13-15.mp3","Trabajo.":"audio/b-13-16.mp3","Gente.":"audio/b-13-17.mp3","Mujer. Jamón.":"audio/b-13-18.mp3","Hola.":"audio/b-13-19.mp3","Hoy.":"audio/b-13-20.mp3","Hablo. Hasta mañana.":"audio/b-13-22.mp3","Chau. Mucho.":"audio/b-13-23.mp3","¿Cómo te llamás?":"audio/b-13-24.mp3","Me llamo Ana.":"audio/b-13-25.mp3","Calle.":"audio/b-13-26.mp3","Pollo.":"audio/b-13-27.mp3","Lluvia.":"audio/b-13-28.mp3","Yo.":"audio/b-13-29.mp3","Ya voy.":"audio/b-13-30.mp3","Yogur. Playa.":"audio/b-13-31.mp3","Mismo.":"audio/b-13-32.mp3","¿Está?":"audio/b-13-33.mp3","Los chicos.":"audio/b-13-34.mp3","Nada. Todo.":"audio/b-13-35.mp3","Cansado.":"audio/b-13-36.mp3","Usted. Ciudad.":"audio/b-13-37.mp3"};
+const player = new Audio(); player.preload = "auto";
+let slow = true;
+try { slow = localStorage.getItem("eb-speed") !== "normal"; } catch {}
+function setSlow(v){
+  slow = v; try { localStorage.setItem("eb-speed", v ? "slow" : "normal"); } catch {}
+  document.querySelectorAll('.shad input[type=checkbox]').forEach(c => c.checked = slow);
+  document.querySelectorAll('#speed .chip').forEach(b => b.setAttribute("aria-pressed", (b.dataset.speed === "slow") === slow));
+}
+function playClip(text){
+  return new Promise((res, rej) => {
+    player.onended = () => res(player.duration || 2);
+    player.onerror = () => rej();
+    player.src = AUDIO[text]; player.preservesPitch = true; player.playbackRate = slow ? 1 : 1.35;
+    player.play().catch(rej);
+  });
+}
+function speak(text){
+  if (AUDIO[text]){ stopShadow(); playClip(text).catch(()=>{}); return; }
+  if (esVoice){
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.voice = esVoice; u.lang = esVoice.lang; u.rate = level === "A1" ? 0.85 : 0.95; speechSynthesis.speak(u); return; } catch {}
+  }
+  if (ttsCap) ttsCap.speak(text, {language:"es", rate: level === "A1" ? 0.85 : 1}).catch(()=>{});
+}
+/* ---------- shadowing: play, pause for you to repeat, play again, next ---------- */
+let shadowRun = 0;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function stopShadow(){
+  shadowRun++;
+  try { player.pause(); } catch {}
+  document.querySelectorAll(".ph.now").forEach(e => e.classList.remove("now"));
+  document.querySelectorAll(".shad").forEach(renderShadCtl);
+}
+async function runShadow(listId, ctl){
+  const run = ++shadowRun;
+  const rows = [...document.querySelectorAll(`#${listId} .ph`)].filter(r => AUDIO[r.dataset.t]);
+  const status = ctl.querySelector(".status"); const btn = ctl.querySelector(".play");
+  btn.textContent = "■ Durdur"; btn.onclick = stopShadow;
+  const reps = ctl.querySelector("select").value | 0;
+  try {
+    for (let i = 0; i < rows.length; i++){
+      const row = rows[i];
+      document.querySelectorAll(".ph.now").forEach(e => e.classList.remove("now"));
+      row.classList.add("now"); row.scrollIntoView({block:"center", behavior:"smooth"});
+      for (let r = 0; r < reps; r++){
+        if (run !== shadowRun) return;
+        status.className = "status"; status.textContent = `🎧 Dinle · ${i+1}/${rows.length}`;
+        const dur = await playClip(row.dataset.t);
+        if (run !== shadowRun) return;
+        status.className = "status you"; status.textContent = "🗣️ Şimdi sen söyle";
+        await sleep((dur / (slow ? 1 : 1.35)) * 1300 + 900);
+      }
+    }
+    if (run === shadowRun){ status.className = "status"; status.textContent = "✓ Grup bitti. Bir tur daha?"; }
+  } catch { if (run === shadowRun) status.textContent = "Ses çalınamadı. Bir kere 🔊 düğmesine dokunup tekrar dene."; }
+  finally {
+    if (run === shadowRun){
+      document.querySelectorAll(".ph.now").forEach(e => e.classList.remove("now"));
+      btn.textContent = "▶ Shadowing başlat"; btn.onclick = () => runShadow(listId, ctl);
+    }
+  }
+}
+function renderShadCtl(ctl){
+  const listId = ctl.dataset.list;
+  if (!ctl.firstChild){
+    ctl.innerHTML = `<button class="play"></button>
+      <label>Tekrar <select id="reps-${listId}"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option></select></label>
+      <label><input type="checkbox" id="slow-${listId}" ${slow ? "checked" : ""}> 🐢 Yavaş</label>
+      <span class="status">Cümleyi dinle, boşlukta yüksek sesle tekrar et.</span>`;
+    ctl.querySelector("input").onchange = e => setSlow(e.target.checked);
+  }
+  const btn = ctl.querySelector(".play");
+  btn.textContent = "▶ Shadowing başlat"; btn.onclick = () => runShadow(listId, ctl);
+}
+document.querySelectorAll(".shad").forEach(renderShadCtl);
+
+function spkBtn(text){
+  const b = document.createElement("button");
+  b.className = "spk"; b.textContent = "🔊"; b.setAttribute("aria-label","Sesli oku: " + text);
+  b.onclick = () => speak(text);
+  return b;
+}
+
+/* ---------- render ---------- */
+function renderScenes(){
+  const box = $("#scenes"); box.innerHTML = "";
+  for (const [k,s] of Object.entries(SCENES)){
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = s.name; b.setAttribute("aria-pressed", k === sceneKey);
+    b.onclick = () => { if (busy) return; sceneKey = k; savePrefs(); renderScenes(); startScene(); };
+    box.append(b);
+  }
+  document.querySelectorAll("#levels .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === level));
+}
+function renderPhrases(){
+  const box = $("#phrases"); box.innerHTML = "";
+  for (const [who,es,tr] of SCENES[sceneKey].phrases){
+    const row = document.createElement("div"); row.className = "ph"; row.dataset.t = es;
+    const t = document.createElement("div");
+    t.innerHTML = `<div class="who"></div><div class="es"></div><div class="tr"></div>`;
+    t.querySelector(".who").textContent = who; t.querySelector(".es").textContent = es; t.querySelector(".tr").textContent = tr;
+    row.append(spkBtn(es), t); box.append(row);
+  }
+  $("#scenenote").textContent = "🎬 " + SCENES[sceneKey].setup;
+}
+function addThem(line, tr){
+  const m = document.createElement("div"); m.className = "msg them";
+  const who = document.createElement("div"); who.className = "who"; who.textContent = SCENES[sceneKey].name.replace(/^\S+\s/,"");
+  const b = document.createElement("div"); b.className = "bubble";
+  const l = document.createElement("div"); l.className = "line";
+  const s = document.createElement("div"); s.textContent = line;
+  l.append(spkBtn(line), s);
+  const t = document.createElement("div"); t.className = "trl"; t.textContent = tr; t.hidden = true;
+  const tb = document.createElement("button"); tb.className = "small"; tb.textContent = "Türkçesini göster";
+  tb.onclick = () => { t.hidden = !t.hidden; tb.textContent = t.hidden ? "Türkçesini göster" : "Türkçesini gizle"; };
+  b.append(l, t);
+  m.append(who, b, tb);
+  $("#chat").append(m); m.scrollIntoView({block:"end", behavior:"smooth"});
+  return m;
+}
+function addMe(text){
+  const m = document.createElement("div"); m.className = "msg me";
+  const b = document.createElement("div"); b.className = "bubble"; b.textContent = text;
+  m.append(b); $("#chat").append(m); m.scrollIntoView({block:"end"});
+  return m;
+}
+function addFix(meEl, check){
+  if (!check) return;
+  const f = document.createElement("div");
+  if (check.ok){ f.className = "fix ok"; f.textContent = "✓ " + (check.note || "Doğru!"); }
+  else {
+    f.className = "fix bad";
+    f.innerHTML = `<b>Düzeltme:</b> <span class="good"></span> <button class="small">🔊</button><div></div>`;
+    f.querySelector(".good").textContent = check.fixed || "";
+    f.querySelector("button").onclick = () => speak(check.fixed || "");
+    f.querySelector("div").textContent = check.note || "";
+    mistakes.unshift({wrong: meEl.querySelector(".bubble").textContent, fixed: check.fixed, note: check.note, scene: SCENES[sceneKey].name, at: new Date().toISOString().slice(0,10)});
+    mistakes = mistakes.slice(0,200);
+    saveState();
+    renderMistakes();
+  }
+  meEl.append(f);
+}
+function renderMistakes(){
+  $("#mcount").textContent = mistakes.length ? `(${mistakes.length})` : "";
+  const box = $("#mlist"); box.innerHTML = "";
+  if (!mistakes.length){ box.innerHTML = `<div class="sub">Henüz yok. Düzeltilen cümlelerin burada birikir.</div>`; return; }
+  const copy = document.createElement("button"); copy.className = "small"; copy.textContent = "📋 Listeyi kopyala (Claude'a yapıştırmak için)";
+  copy.onclick = async () => {
+    const txt = mistakes.map(x => `✗ ${x.wrong}\n✓ ${x.fixed}\n  ${x.note||""}`).join("\n\n");
+    try { await navigator.clipboard.writeText(txt); copy.textContent = "✓ Kopyalandı"; } catch { copy.textContent = "Kopyalanamadı, metni elle seç"; }
+  };
+  const clr = document.createElement("button"); clr.className = "small"; clr.textContent = "Listeyi temizle";
+  let armed = false;
+  clr.onclick = () => { if (!armed){ armed = true; clr.textContent = "Emin misin? Tekrar dokun"; return; } mistakes = []; saveState(); renderMistakes(); };
+  const r = document.createElement("div"); r.className = "row"; r.style.gap = "16px"; r.append(copy, clr); box.append(r);
+  for (const x of mistakes.slice(0,50)){
+    const it = document.createElement("div"); it.className = "it";
+    it.innerHTML = `<div><s></s></div><div class="good" style="font-weight:600"></div><div class="sub"></div>`;
+    it.querySelector("s").textContent = x.wrong; it.children[1].textContent = x.fixed; it.children[2].textContent = (x.note||"") + " · " + x.scene;
+    box.append(it);
+  }
+}
+
+/* ---------- scene logic ---------- */
+function rules(){
+  const s = SCENES[sceneKey];
+  return `You run a role-play in a Spanish practice app. The learner is a Turkish speaker (English B2) who lives in Buenos Aires and wants to speak exactly like people there do.
+SCENE: ${s.brief}
+YOUR ROLE: ${s.role}. Stay in character.
+SPEAK EXACTLY LIKE A PORTEÑO TODAY (Buenos Aires, 2020s). Always voseo (vos tenés, bajá, querés), never tú or vosotros. Use the words people really use in Buenos Aires, never neutral, Spain or Mexican Spanish: acá (not aquí), dale (not vale/ok), celular (not móvil), auto (not coche), colectivo/bondi (not autobús/camión), jugo (not zumo), plata (not dinero in casual talk), castellano (not español), departamento/depto (not piso), heladera (not nevera), pileta (not piscina), remera (not camiseta), un toque/un segundito (not ahorita). In "fixed", always give the version a real porteño would say, even when the learner's sentence is correct but sounds like textbook or Spain Spanish; then say so in the note.
+LEVEL: ${LEVELS[level]}
+Keep each line 1–2 sentences. Move the scene forward naturally; end it after roughly 6–10 exchanges.
+The learner may mix in Turkish words when they don't know the Spanish: understand them and continue.
+If the learner gives a code or a DNI number, accept any number. Never ask for other personal data.
+After every learner message, check their Spanish (grammar, word choice, and whether a porteño would say it that way). Minor accent-mark omissions alone count as ok but mention them. A grammatically correct sentence that no porteño would say counts as not ok.
+Reply with ONLY this JSON object:
+{"line": "your next line in Spanish", "tr": "Turkish translation of your line", "check": {"ok": true|false, "fixed": "the learner's message rewritten in natural Rioplatense Spanish", "note": "max 2 short sentences in Turkish explaining the main fix, or a short praise if ok"}, "hint": "one natural Spanish reply the learner could give next", "hint_tr": "Turkish of the hint", "end": false}
+Set "end": true only when the scene is naturally finished (then "line" is your goodbye).`;
+}
+function startScene(){
+  stopShadow(); turns = []; ended = false; $("#chat").innerHTML = "";
+  renderPhrases();
+  const o = SCENES[sceneKey].open;
+  if (sceneKey === "kargo"){
+    const bz = document.createElement("div"); bz.className = "sub"; bz.textContent = "🔔 Bzzzz… interkom çalıyor."; $("#chat").append(bz);
+  }
+  addThem(o.line, o.tr);
+  turns.push({role:"assistant", content: JSON.stringify({line:o.line, tr:o.tr, check:null, hint:o.hint, hint_tr:o.hint_tr, end:false})});
+  lastHint = {hint:o.hint, hint_tr:o.hint_tr};
+  $("#box").disabled = false; $("#send").disabled = false;
+}
+let sample = null;
+async function send(){
+  const text = $("#box").value.trim();
+  if (!text || busy || ended) return;
+  if (!sample){ showInfo("Cande ile yazışma Claude'a bağlanır, sadece claude.ai sürümünde çalışır: claude.ai/artifact/JTSKVR8KAkNjJXBFUG8rAj · Buradaki kalıplar, sesler ve yürüyüş modu her yerde çalışır."); return; }
+  busy = true; $("#send").disabled = true; $("#box").value = ""; autosize();
+  const meEl = addMe(text);
+  turns.push({role:"user", content:text});
+  const wait = document.createElement("div"); wait.className = "msg them thinking"; wait.textContent = "…"; $("#chat").append(wait);
+  try {
+    const input = [{role:"user", content: rules()}, ...turns.slice(-24)];
+    if (input[1] && input[1].role === "assistant") input.splice(1, 0, {role:"user", content:"(Scene starts. Your opening line was:)"});
+    const r = await sample.json(input, {modelTier:"quick", cache:false});
+    wait.remove();
+    if (!r || typeof r.line !== "string") throw {code:"invalid_json"};
+    addFix(meEl, r.check);
+    addThem(r.line, r.tr || "");
+    turns.push({role:"assistant", content: JSON.stringify(r)});
+    lastHint = r.hint ? {hint:r.hint, hint_tr:r.hint_tr} : null;
+    if ($("#auto").checked) speak(r.line);
+    if (r.end) finish();
+  } catch(e){
+    wait.remove(); turns.pop();
+    const msg = {not_granted:"Claude'a erişim izni verilmedi. Sayfanın izinlerinden açabilirsin.", rate_limited:"Çok hızlı gitti, birkaç saniye bekleyip tekrar gönder.", invalid_json:"Cevap okunamadı, mesajını tekrar gönder."}[e?.code] || "Bağlantı sorunu oldu, mesajını tekrar gönder.";
+    showInfo(msg); $("#box").value = text; autosize();
+  } finally { busy = false; if (!ended) $("#send").disabled = false; }
+}
+function showInfo(t){
+  const d = document.createElement("div"); d.className = "note"; d.textContent = t; $("#chat").append(d); d.scrollIntoView({block:"end"});
+}
+function finish(){
+  ended = true; $("#send").disabled = true;
+  const d = document.createElement("div"); d.className = "end";
+  d.innerHTML = `<b>🎉 Sahne bitti!</b><div class="sub">Düzeltmeler "Hatalarım" listesine eklendi. Aynı sahneyi tekrar oynarsan her seferinde biraz farklı gelişir.</div>`;
+  const again = document.createElement("button"); again.className = "send"; again.textContent = "Tekrar oyna";
+  again.onclick = startScene; d.append(again); $("#chat").append(d); d.scrollIntoView({block:"end"});
+}
+
+/* ---------- input ---------- */
+function autosize(){ const b = $("#box"); b.style.height = "auto"; b.style.height = Math.min(b.scrollHeight,120) + "px"; }
+$("#box").addEventListener("input", autosize);
+$("#box").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(); } });
+$("#send").onclick = send;
+$("#restart").onclick = () => { if (!busy) startScene(); };
+$("#hint").onclick = () => {
+  if (!lastHint || ended) return;
+  const d = document.createElement("div"); d.className = "note";
+  d.innerHTML = `💡 <b></b> <button class="small">🔊</button><div class="sub"></div>`;
+  d.querySelector("b").textContent = lastHint.hint; d.querySelector(".sub").textContent = lastHint.hint_tr || "";
+  const h = lastHint.hint; d.querySelector("button").onclick = () => speak(h);
+  $("#chat").append(d); d.scrollIntoView({block:"end"});
+};
+document.querySelectorAll("#levels .chip").forEach(b => b.onclick = () => { level = b.dataset.level; savePrefs(); renderScenes(); });
+function savePrefs(){ saveState(); }
+
+/* ---------- walking mode: pre-built lesson MP3s ---------- */
+const WALK = [{"id": "w-all-basics", "title": "⭐ Temel kalıplar (hepsi)", "sec": 2941}, {"id": "w-all-scenes", "title": "⭐ Sahneler (hepsi)", "sec": 1243}, {"id": "w-b0", "title": "👍 Tamam / Evet", "sec": 93}, {"id": "w-b1", "title": "🙏 Nezaket", "sec": 112}, {"id": "w-b2", "title": "❓ Soru kelimeleri", "sec": 99}, {"id": "w-b3", "title": "🧭 Yön ve yer", "sec": 113}, {"id": "w-b4", "title": "⚠️ Dikkat / Bekle", "sec": 107}, {"id": "w-b5", "title": "😅 Anlamadım", "sec": 94}, {"id": "w-b6", "title": "⏰ Zaman", "sec": 88}, {"id": "w-b7", "title": "🔢 Sayılar ve para", "sec": 249}, {"id": "w-b8", "title": "🗣️ Arjantin argosu", "sec": 173}, {"id": "w-b9", "title": "🏠 Komşu ve sohbet", "sec": 197}, {"id": "w-b10", "title": "🔤 Harfler ve okunuş", "sec": 392}, {"id": "w-b11", "title": "🕐 Saatler", "sec": 378}, {"id": "w-b12", "title": "📅 Günler", "sec": 361}, {"id": "w-b13", "title": "👄 Okunuş kuralları", "sec": 487}, {"id": "w-s-kargo", "title": "📦 Kargocu", "sec": 156}, {"id": "w-s-verduleria", "title": "🍅 Manav", "sec": 115}, {"id": "w-s-bazar", "title": "🛍️ Bazar / dükkan", "sec": 519}, {"id": "w-s-cafe", "title": "☕ Kafe (Starbucks)", "sec": 269}, {"id": "w-s-kiosco", "title": "🚌 Kiosko · SUBE", "sec": 93}, {"id": "w-s-farmacia", "title": "💊 Eczane", "sec": 91}];
+let wIdx = -1, dlCap = null;
+const wp = () => $("#wplayer");
+function fmtMin(sec){ return Math.round(sec/60) + " dk"; }
+function renderWalk(){
+  const box = $("#wlist"); box.innerHTML = "";
+  WALK.forEach((w,i) => {
+    const b = document.createElement("button"); b.className = "chip";
+    b.textContent = `${w.title} · ${fmtMin(w.sec)}`; b.setAttribute("aria-pressed", i === wIdx);
+    b.onclick = () => playWalk(i);
+    box.append(b);
+  });
+}
+function playWalk(i){
+  stopShadow(); try { player.pause(); } catch {}
+  wIdx = i; const w = WALK[i]; const a = wp();
+  a.src = "audio/walk/" + w.id + ".mp3"; a.play().catch(()=>{});
+  $("#wnow").textContent = "▶ " + w.title; $("#wdl").hidden = false;
+  if ("mediaSession" in navigator){
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({title: w.title.replace(/^\S+\s/,""), artist: "Cande · Escenas de Barrio", album: "Yürüyüş modu"});
+      navigator.mediaSession.setActionHandler("nexttrack", () => playWalk((wIdx+1) % WALK.length));
+      navigator.mediaSession.setActionHandler("previoustrack", () => playWalk((wIdx-1+WALK.length) % WALK.length));
+    } catch {}
+  }
+  renderWalk();
+}
+wp().addEventListener("ended", () => { if ($("#wnext").checked && wIdx >= 2 && wIdx < WALK.length-1) playWalk(wIdx+1); });
+$("#wdl").onclick = async () => {
+  if (wIdx < 0) return;
+  if (!dlCap){ window.open("audio/walk/" + WALK[wIdx].id + ".mp3", "_blank"); return; }
+  const w = WALK[wIdx], btn = $("#wdl"), old = btn.textContent;
+  btn.textContent = "Hazırlanıyor…";
+  try {
+    const blob = await (await fetch("audio/walk/" + w.id + ".mp3")).blob();
+    const name = "Escenas de Barrio - " + w.title.replace(/^\S+\s/,"").replace(/[\/:*?"<>|]/g,"") + ".mp3";
+    await dlCap.save({filename: name, data: blob});
+    btn.textContent = "✓ Kaydedildi";
+  } catch { btn.textContent = "İndirilemedi"; }
+  setTimeout(() => { btn.textContent = old; }, 2500);
+};
+renderWalk();
+document.querySelectorAll("#speed .chip").forEach(b => b.onclick = () => setSlow(b.dataset.speed === "slow"));
+setSlow(slow);
+
+renderWho(); renderScenes(); startScene(); renderMistakes(); renderBasics();
+
+/* ---------- phone app: offline audio ---------- */
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+const ALL_AUDIO = [...new Set(Object.values(AUDIO))].concat(WALK.map(w => "audio/walk/" + w.id + ".mp3"));
+async function offlineCount(){
+  try { const c = await caches.open("eb-audio"); let n = 0;
+    for (const u of ALL_AUDIO) if (await c.match(u)) n++;
+    return n; } catch { return 0; }
+}
+offlineCount().then(n => { if (n === ALL_AUDIO.length) $("#offs").textContent = "✓ tüm sesler telefonda"; else if (n) $("#offs").textContent = n + "/" + ALL_AUDIO.length + " ses telefonda"; });
+$("#offl").onclick = async () => {
+  const btn = $("#offl"), st = $("#offs"); btn.disabled = true;
+  try { await navigator.storage?.persist?.(); } catch {}
+  let c; try { c = await caches.open("eb-audio"); } catch { st.textContent = "Bu tarayıcı kaydetmeye izin vermiyor"; btn.disabled = false; return; }
+  let done = 0, fail = 0;
+  for (const u of ALL_AUDIO){
+    try { if (!(await c.match(u))){ const r = await fetch(u, {cache:"reload"}); if (r.ok && r.status === 200) await c.put(u, r); else fail++; } }
+    catch { fail++; }
+    done++; st.textContent = "İniyor… " + done + "/" + ALL_AUDIO.length + " (ekranı açık tut)";
+  }
+  st.textContent = fail ? ("⚠️ " + fail + " ses inemedi, tekrar dene") : "✓ tüm sesler telefonda, internetsiz çalışır";
+  btn.disabled = false;
+};
+
+
+/* ---------- capabilities ---------- */
+(async () => {
+  if (!window.claude?.use) return;
+  claude.use("sample").then(s => { sample = s; });
+  claude.use("tts").then(t => { ttsCap = t; });
+  claude.use("downloads").then(x => { dlCap = x; if (x && wIdx >= 0) $("#wdl").hidden = false; });
+  (async () => {
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if (!db || !user) { $("#sync").textContent = "· bu cihazda kayıtlı"; return; }
+    try {
+      const uid = await user.id(); if (!uid) return;
+      const doc = db.collection("data/users/" + uid).doc("escenas");
+      const snap = await doc.get();
+      const remote = snap && (snap.data ? snap.data() : snap);
+      dbDoc = doc;
+      if (remote && remote.json){
+        const st = JSON.parse(remote.json);
+        if (st && st.profiles && Object.keys(st.profiles).length && !busy){
+          state = st; if (!state.profiles[state.active]) state.active = Object.keys(state.profiles)[0];
+          applyProfile(); try { localStorage.setItem("eb-state", JSON.stringify(state)); } catch {}
+          renderWho(); renderScenes(); startScene(); renderMistakes();
+        }
+        $("#sync").textContent = "· ☁️ eşitlendi";
+      } else saveState();
+    } catch { $("#sync").textContent = "· bu cihazda kayıtlı"; }
+  })();
+  const d = await claude.use("dictation");
+  if (!d) return;
+  const mic = $("#mic"); mic.hidden = false;
+  let listening = false, base = "";
+  d.onState(({state}) => { listening = state === "listening"; mic.classList.toggle("on", listening); });
+  d.onPartial(({text}) => { $("#box").value = (base + " " + text).trim(); autosize(); });
+  d.onFinal(({text}) => { base = (base + " " + text).trim(); $("#box").value = base; autosize(); });
+  mic.onclick = () => {
+    if (listening){ d.stop().catch(()=>{}); return; }
+    base = $("#box").value.trim();
+    d.start({language:"es-AR"}).catch(e => {
+      if (e?.code === "not_granted") mic.hidden = true;
+      else if (e?.code === "unavailable") d.start({language:"es"}).catch(()=>{ mic.hidden = true; });
+    });
+  };
+})();
+</script>
+</body></html>
